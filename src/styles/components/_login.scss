@@ -1,0 +1,389 @@
+@use '../tokens' as *;
+@use '../mixins' as *;
+
+// ============================================
+// LOGIN COMPONENT STYLES
+// ============================================
+
+// --------------------------------------------
+// LOGIN SCREEN
+// --------------------------------------------
+
+.login-screen {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  background-color: $color-white;
+
+  @include breakpoint-up($breakpoint-lg) {
+    flex-direction: row;
+  }
+}
+
+// --------------------------------------------
+// LOGIN IMAGE SECTION
+// --------------------------------------------
+
+.login-image {
+  flex: 1;
+  @include flex-column;
+  justify-content: flex-end;
+  position: relative;
+  overflow: hidden;
+  display: none;
+  transition: all $transition-slow ease-in-out;
+
+  @include breakpoint-up($breakpoint-lg) {
+    display: flex;
+  }
+
+  &--owner {
+    @include gradient-owner;
+  }
+
+  &--waiter {
+    @include gradient-waiter;
+  }
+
+  &__img {
+    object-fit: contain;
+    object-position: bottom;
+    transition: opacity $transition-slow ease-in-out;
+
+    &--visible {
+      opacity: 1;
+    }
+
+    &--hidden {
+      opacity: 0;
+    }
+  }
+}
+
+// --------------------------------------------
+// LOGIN CONTENT AREA
+// --------------------------------------------
+
+.login-content {
+  flex: 1;
+  @include flex-center;
+  padding: $spacing-10 $spacing-6;
+}
+
+.login-content__wrapper {
+  width: 100%;
+  max-width: $max-width-form;
+}
+
+// --------------------------------------------
+// LOGIN HEADER
+// --------------------------------------------
+
+.login-header {
+  margin-bottom: $spacing-1;
+  text-align: center;
+  color: $color-text-primary;
+}
+
+.login-header__logo-container {
+  position: relative;
+  margin: 0 auto $spacing-4;
+  width: $logo-width;
+  height: $logo-height;
+}
+
+.login-header__logo {
+  position: absolute;
+  inset: 0;
+  transition: opacity $transition-fast ease-in-out;
+  width: $logo-width;
+  height: $logo-height;
+
+  &--visible {
+    opacity: 1;
+  }
+
+  &--hidden {
+    opacity: 0;
+  }
+}
+
+.login-header__content {
+  margin-top: $spacing-8;
+  @include flex-column;
+  gap: $spacing-2;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.login-header__title {
+  @include heading-xl;
+  white-space: nowrap;
+}
+
+.login-header__subtitle {
+  @include body-text;
+  text-align: center;
+}
+
+.login-header__toggle {
+  @include link-text;
+  text-decoration: underline;
+}
+
+// --------------------------------------------
+// LOGIN FORM
+// --------------------------------------------
+
+.login-form {
+  @include flex-column;
+  align-items: center;
+  width: 100%;
+  gap: $spacing-6;
+}
+
+.login-form__field {
+  width: 100%;
+  max-width: $max-width-input;
+
+  &-label {
+    @include label-text;
+    display: block;
+    margin-bottom: $spacing-2;
+  }
+
+  &-input-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  &-input {
+    @include input-base;
+
+    &--error {
+      @include input-error;
+    }
+  }
+
+  &-icon {
+    @include input-icon;
+
+    &--left {
+      left: $spacing-5;
+    }
+
+    &--right {
+      right: $spacing-5;
+    }
+
+    &--error {
+      right: $spacing-12;
+    }
+  }
+
+  &-error {
+    @include error-text;
+    margin-top: $spacing-2;
+
+    &::before {
+      content: '*';
+    }
+  }
+}
+
+.login-form__password-toggle {
+  @include button-text;
+  position: absolute;
+  right: $spacing-5;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $color-icon;
+
+  &:hover:not(:disabled) {
+    color: $color-text-secondary;
+  }
+}
+
+.login-form__actions {
+  display: flex;
+  width: 100%;
+  max-width: $max-width-input;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.login-form__forgot-link {
+  @include button-link;
+  text-align: right;
+}
+
+.login-form__submit {
+  @include button-primary;
+}
+
+.login-form__register {
+  margin-top: $spacing-4;
+  text-align: center;
+  @include body-text;
+
+  &-link {
+    @include link-text;
+  }
+}
+
+// --------------------------------------------
+// PASSWORD RECOVERY FORM
+// --------------------------------------------
+
+.recovery-form {
+  padding: $spacing-8;
+
+  &__back {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    color: $color-secondary;
+    margin-bottom: $spacing-6;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: $font-size-sm;
+
+    &:hover:not(:disabled) {
+      text-decoration: underline;
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: $spacing-4;
+  }
+
+  &__title {
+    @include heading-xl;
+    margin-bottom: $spacing-2;
+  }
+
+  &__description {
+    @include body-text;
+  }
+
+  &__content {
+    @include flex-column;
+    align-items: center;
+    gap: $spacing-6;
+  }
+
+  &__submit {
+    @include button-primary;
+  }
+}
+
+// Recovery Success
+.recovery-success {
+  text-align: center;
+
+  &__icon {
+    @include success-icon-container;
+    margin: 0 auto $spacing-4;
+  }
+
+  &__title {
+    @include heading-xl;
+    margin-bottom: $spacing-2;
+  }
+
+  &__message {
+    @include body-text;
+  }
+
+  &__button {
+    @include button-primary;
+    margin-top: $spacing-6;
+    max-width: 300px;
+  }
+}
+
+// --------------------------------------------
+// AUTH OVERLAY
+// --------------------------------------------
+
+.auth-overlay {
+  @include overlay;
+
+  &__content {
+    background-color: $color-white;
+    border-radius: $radius-xl;
+    padding: $spacing-8;
+    @include flex-column;
+    align-items: center;
+    gap: $spacing-4;
+    box-shadow: $shadow-xl;
+  }
+
+  &__spinner {
+    color: $color-primary;
+  }
+
+  &__text {
+    @include text-style($font-size-base, $font-weight-medium, $color-text-primary);
+  }
+
+  &__success-icon {
+    @include success-icon-container;
+  }
+}
+
+// --------------------------------------------
+// CARD FLIPPER
+// --------------------------------------------
+
+.login-card {
+  &__front {
+    @include card-front;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: $radius-xl;
+    background-color: $color-white;
+    padding: $spacing-4;
+    transition: all 0.4s;
+
+    &--flipped {
+      visibility: hidden;
+    }
+
+    &--visible {
+      visibility: visible;
+    }
+  }
+
+  &__back {
+    @include card-back;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: $radius-xl;
+    background-color: $color-white;
+  }
+}
+
+// --------------------------------------------
+// VERSION & LANGUAGE
+// --------------------------------------------
+
+.login-footer {
+  margin-top: $spacing-8;
+  @include flex-center;
+  width: 100%;
+  max-width: $max-width-input;
+  gap: $spacing-8;
+  @include muted-text;
+}
+

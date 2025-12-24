@@ -1,0 +1,229 @@
+@use 'tokens' as *;
+@use 'mixins' as *;
+
+// Import Tailwind
+@import "tailwindcss";
+
+// Import Inter font
+@import '@fontsource/inter';
+
+// Import component styles
+@import 'components/login';
+
+// ============================================
+// GLOBAL STYLES
+// ============================================
+
+// Define all animations
+@include define-animations;
+
+// --------------------------------------------
+// BASE STYLES
+// --------------------------------------------
+
+:root {
+  // CSS Custom Properties for runtime theming
+  --color-primary: #{$color-primary};
+  --color-primary-hover: #{$color-primary-hover};
+  --color-secondary: #{$color-secondary};
+  --color-background: #{$color-background};
+  --color-text-primary: #{$color-text-primary};
+  --color-text-secondary: #{$color-text-secondary};
+  --color-error: #{$color-error};
+  --color-success: #{$color-success};
+  --font-family-primary: #{$font-family-primary};
+}
+
+body {
+  background: $color-background;
+  font-family: $font-family-primary;
+  color: $color-text-primary;
+}
+
+// --------------------------------------------
+// INPUT STYLES
+// --------------------------------------------
+
+input::placeholder {
+  font-size: $font-size-sm;
+}
+
+.input-lock input:focus + svg {
+  stroke: $color-error !important;
+}
+
+// --------------------------------------------
+// CARD FLIP STYLES
+// --------------------------------------------
+
+.flipped .flipper {
+  transform: rotateY(180deg);
+}
+
+.flipper {
+  @include card-flipper;
+}
+
+.front {
+  @include card-front;
+}
+
+.back {
+  @include card-back;
+}
+
+// --------------------------------------------
+// GRADIENT BACKGROUNDS
+// --------------------------------------------
+
+.bg-waiter {
+  @include animated-gradient($color-waiter-bg-gradient);
+}
+
+.bg-owner {
+  @include animated-gradient($color-owner-bg-gradient);
+}
+
+// --------------------------------------------
+// ANIMATIONS
+// --------------------------------------------
+
+.animate-enterOwner,
+.animate-enterWaiter {
+  animation: enter-slide-up $animation-duration-normal forwards;
+}
+
+// --------------------------------------------
+// IMAGE STYLES
+// --------------------------------------------
+
+.imageLogin {
+  will-change: opacity;
+  object-fit: contain;
+  object-position: bottom;
+  max-height: 100%;
+}
+
+// --------------------------------------------
+// RESPONSIVE ORIENTATION
+// --------------------------------------------
+
+@include portrait {
+  .portrait\:hidden {
+    display: none;
+  }
+}
+
+@include landscape {
+  .landscape\:md\:flex {
+    display: flex;
+  }
+}
+
+// --------------------------------------------
+// UTILITY CLASSES
+// --------------------------------------------
+
+// Transition utilities
+.transition-opacity {
+  transition: opacity $transition-slow ease-in-out;
+}
+
+.transition-all {
+  transition: all $transition-slow ease-in-out;
+}
+
+// Duration utilities  
+.duration-200 {
+  transition-duration: $animation-duration-fast;
+}
+
+.duration-300 {
+  transition-duration: $animation-duration-normal;
+}
+
+.duration-400 {
+  transition-duration: 0.4s;
+}
+
+.duration-500 {
+  transition-duration: $animation-duration-slow;
+}
+
+// --------------------------------------------
+// SKELETON ANIMATIONS
+// --------------------------------------------
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    #E0E0E0 0%,
+    #F0F0F0 50%,
+    #E0E0E0 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+// Staggered fade-in for children
+.stagger-fade-in > * {
+  opacity: 0;
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+@for $i from 1 through 10 {
+  .stagger-fade-in > *:nth-child(#{$i}) {
+    animation-delay: #{$i * 0.05}s;
+  }
+}
+

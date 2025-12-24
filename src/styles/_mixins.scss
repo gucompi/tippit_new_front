@@ -1,0 +1,337 @@
+@use 'tokens' as *;
+
+// ============================================
+// MIXINS - Tippit Design System
+// ============================================
+
+// --------------------------------------------
+// TYPOGRAPHY MIXINS
+// --------------------------------------------
+
+@mixin text-style($size: $font-size-base, $weight: $font-weight-regular, $color: $color-text-primary) {
+  font-family: $font-family-primary;
+  font-size: $size;
+  font-weight: $weight;
+  color: $color;
+}
+
+@mixin heading-xl {
+  @include text-style($font-size-xl, $font-weight-semibold, $color-text-primary);
+  line-height: $line-height-tight;
+}
+
+@mixin body-text {
+  @include text-style($font-size-sm, $font-weight-regular, $color-text-secondary);
+  line-height: $line-height-normal;
+}
+
+@mixin label-text {
+  @include text-style($font-size-sm, $font-weight-bold, $color-text-input);
+  letter-spacing: $letter-spacing-tight;
+  line-height: $line-height-normal;
+}
+
+@mixin link-text {
+  @include text-style($font-size-sm, $font-weight-regular, $color-secondary);
+  text-decoration: none;
+  text-underline-offset: 4px;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+@mixin muted-text {
+  @include text-style($font-size-xs, $font-weight-regular, $color-text-muted);
+}
+
+// --------------------------------------------
+// INPUT MIXINS
+// --------------------------------------------
+
+@mixin input-base {
+  height: $input-height-md;
+  width: 100%;
+  padding: 0 $spacing-12;
+  border-radius: $radius-full;
+  border: 1px solid $color-border;
+  background-color: $color-white;
+  font-size: $font-size-base;
+  color: $color-text-input;
+  outline: none;
+  transition: border-color $transition-normal;
+
+  &::placeholder {
+    color: $color-text-placeholder;
+    font-size: $font-size-sm;
+  }
+
+  &:focus {
+    border-color: $color-border-focus;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+@mixin input-error {
+  border: 1px solid $color-error-border;
+  background-color: $color-error-light;
+}
+
+@mixin input-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $color-icon;
+  width: $icon-size-md;
+  height: $icon-size-md;
+}
+
+// --------------------------------------------
+// BUTTON MIXINS
+// --------------------------------------------
+
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $font-family-primary;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: $letter-spacing-wide;
+  border: none;
+  cursor: pointer;
+  transition: background-color $transition-normal;
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  height: $button-height-lg;
+  width: 100%;
+  max-width: $max-width-button;
+  border-radius: $radius-lg;
+  background-color: $color-primary;
+  color: $color-white;
+  font-size: $font-size-sm;
+
+  &:hover:not(:disabled) {
+    background-color: $color-primary-hover;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+}
+
+@mixin button-text {
+  @include button-base;
+  background: none;
+  padding: 0;
+  text-transform: none;
+  font-weight: $font-weight-regular;
+}
+
+@mixin button-link {
+  @include button-text;
+  color: $color-secondary;
+  font-size: $font-size-xs;
+  text-underline-offset: 4px;
+
+  &:hover:not(:disabled) {
+    text-decoration: underline;
+  }
+}
+
+// --------------------------------------------
+// LAYOUT MIXINS
+// --------------------------------------------
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// --------------------------------------------
+// GRADIENT MIXINS
+// --------------------------------------------
+
+@mixin gradient-owner {
+  background: radial-gradient(circle at top, $color-owner-gradient-start, $color-owner-gradient-end);
+}
+
+@mixin gradient-waiter {
+  background: radial-gradient(circle at top, $color-waiter-gradient-start, $color-waiter-gradient-end);
+}
+
+@mixin animated-gradient($gradient) {
+  background: $gradient;
+  background-size: 400% 400%;
+  animation: gradient-animation $animation-gradient-duration ease infinite;
+}
+
+// --------------------------------------------
+// CARD FLIP MIXINS
+// --------------------------------------------
+
+@mixin card-flipper {
+  transition: $transition-card-flip;
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+@mixin card-face {
+  backface-visibility: hidden;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: $color-white;
+}
+
+@mixin card-front {
+  @include card-face;
+  z-index: 2;
+}
+
+@mixin card-back {
+  @include card-face;
+  transform: rotateY(180deg);
+  position: absolute;
+  top: 0;
+  z-index: 1;
+}
+
+// --------------------------------------------
+// OVERLAY MIXINS
+// --------------------------------------------
+
+@mixin overlay {
+  position: fixed;
+  inset: 0;
+  z-index: $z-index-modal;
+  @include flex-center;
+  background-color: $color-overlay;
+  backdrop-filter: blur(4px);
+}
+
+// --------------------------------------------
+// RESPONSIVE MIXINS
+// --------------------------------------------
+
+@mixin breakpoint-up($breakpoint) {
+  @media (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+@mixin breakpoint-down($breakpoint) {
+  @media (max-width: $breakpoint - 1px) {
+    @content;
+  }
+}
+
+@mixin landscape {
+  @media (orientation: landscape) {
+    @content;
+  }
+}
+
+@mixin portrait {
+  @media (orientation: portrait) {
+    @content;
+  }
+}
+
+// --------------------------------------------
+// ANIMATION KEYFRAMES
+// --------------------------------------------
+
+@mixin define-animations {
+  @keyframes gradient-animation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  @keyframes enter-slide-up {
+    0% {
+      opacity: 0;
+      transform: translateY(30%);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes smoke {
+    0% {
+      top: -2px;
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      top: -10px;
+      opacity: 0;
+    }
+  }
+}
+
+// --------------------------------------------
+// ERROR STATE MIXINS
+// --------------------------------------------
+
+@mixin error-text {
+  font-size: $font-size-sm;
+  color: $color-error;
+}
+
+@mixin error-icon {
+  position: absolute;
+  right: $spacing-5;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: $z-index-base;
+  color: $color-error;
+}
+
+// --------------------------------------------
+// SUCCESS STATE MIXINS
+// --------------------------------------------
+
+@mixin success-icon-container {
+  width: 64px;
+  height: 64px;
+  background-color: $color-success-light;
+  border-radius: $radius-full;
+  @include flex-center;
+}
+
