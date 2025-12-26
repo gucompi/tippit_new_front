@@ -241,9 +241,9 @@ export function PaymentsList({ groupedPayments }: PaymentsListProps) {
                   type="button"
                   className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
                   onClick={handleValidateTransfer}
-                  disabled={!numeroOperacion || validateTransferMutation.isLoading}
+                  disabled={!numeroOperacion || validateTransferMutation.isPending}
                 >
-                  {validateTransferMutation.isLoading
+                  {validateTransferMutation.isPending
                     ? t('validating', { defaultValue: 'Validating...' })
                     : t('validate', { defaultValue: 'Validate' })}
                 </button>
