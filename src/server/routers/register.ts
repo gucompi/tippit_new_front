@@ -1,25 +1,7 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { publicProcedure, router } from '../trpc';
-
-// Simulated delay to mimic network latency
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// Mock registered users database
-const registeredUsers: Array<{
-  id: string;
-  email: string;
-  name: string;
-  cuit: string;
-  alias: string;
-  phone: string;
-  photo: string;
-  verified: boolean;
-}> = [];
-
-// Mock registered emails and CUITs
-const registeredEmails = new Set(['existing@tippit.com', 'taken@example.com']);
-const registeredCuits = new Set(['20123456789', '27987654321']);
+import { backendClient } from '@/lib/backend-client';
 
 // Input schemas
 const checkEmailSchema = z.object({
@@ -37,11 +19,12 @@ const checkPhoneSchema = z.object({
 const registerSchema = z.object({
   email: z.string().email('Please enter a valid email'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
-  name: z.string().min(1, 'Name is required'),
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
   cuit: z.string().min(11, 'CUIT must be 11 digits').max(11, 'CUIT must be 11 digits'),
   alias: z.string().min(1, 'Alias is required'),
   phone: z.string().min(8, 'Phone number is required'),
-  photo: z.string().min(1, 'Photo is required'),
+  profilePicture: z.string().min(1, 'Profile picture is required'),
 });
 
 export const registerRouter = router({
@@ -55,14 +38,28 @@ export const registerRouter = router({
   checkEmail: publicProcedure
     .input(checkEmailSchema)
     .query(async ({ input }) => {
-      await delay(800); // Simulate email validation API call
+      try {
+        const response = await backendClient.get('/api/register/check-email', {
+          params: { email: input.email },
+        });
+        return {
+          available: response.data.available,
+          message: response.data.message,
+        };
+      } catch (error: any) {
+        // Handle 401 Unauthorized (missing API key)
+        if (error.response?.status === 401) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: error.response?.data?.message || 'API key is missing or invalid. Please check your environment variables.',
+          });
+        }
 
-      const exists = registeredEmails.has(input.email.toLowerCase());
-      
-      return {
-        available: !exists,
-        message: exists ? 'This email is already registered' : 'Email is available',
-      };
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.response?.data?.error || error.response?.data?.message || 'Failed to check email',
+        });
+      }
     }),
 
   /**
@@ -71,25 +68,38 @@ export const registerRouter = router({
   checkCuit: publicProcedure
     .input(checkCuitSchema)
     .query(async ({ input }) => {
-      await delay(700); // Simulate CUIT validation API call
-
-      // Validate CUIT format (basic Argentine CUIT validation)
-      const cuitDigits = input.cuit.replace(/\D/g, '');
-      if (cuitDigits.length !== 11) {
+      try {
+        const cuitDigits = input.cuit.replace(/\D/g, '');
+        const response = await backendClient.get('/api/register/check-cuit', {
+          params: { cuit: cuitDigits },
+        });
         return {
-          valid: false,
-          available: false,
-          message: 'CUIT must be exactly 11 digits',
+          valid: response.data.valid,
+          available: response.data.available,
+          message: response.data.message,
         };
-      }
+      } catch (error: any) {
+        // Log the full error for debugging
+        console.error('Error checking CUIT:', {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          message: error.message,
+        });
 
-      const exists = registeredCuits.has(cuitDigits);
-      
-      return {
-        valid: true,
-        available: !exists,
-        message: exists ? 'This CUIT is already registered' : 'CUIT is available',
-      };
+        // Handle 401 Unauthorized (missing API key)
+        if (error.response?.status === 401) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: error.response?.data?.message || 'API key is missing or invalid. Please check your environment variables.',
+          });
+        }
+
+        throw new TRPCError({
+          code: error.response?.status === 400 ? 'BAD_REQUEST' : 'INTERNAL_SERVER_ERROR',
+          message: error.response?.data?.error || error.response?.data?.message || 'Failed to check CUIT',
+        });
+      }
     }),
 
   /**
@@ -98,8 +108,6 @@ export const registerRouter = router({
   checkPhone: publicProcedure
     .input(checkPhoneSchema)
     .query(async ({ input }) => {
-      await delay(500); // Simulate phone validation API call
-
       // Basic Argentine phone validation (expecting format like 1155556666)
       const phoneDigits = input.phone.replace(/\D/g, '');
       const isValid = phoneDigits.length >= 8 && phoneDigits.length <= 12;
@@ -120,76 +128,111 @@ export const registerRouter = router({
   register: publicProcedure
     .input(registerSchema)
     .mutation(async ({ input }) => {
-      await delay(2500); // Simulate registration process with email sending
+      try {
+        const response = await backendClient.post('/api/register', {
+          email: input.email,
+          password: input.password,
+          firstName: input.firstName,
+          lastName: input.lastName,
+          cuit: input.cuit,
+          alias: input.alias,
+          phone: input.phone,
+          profilePicture: input.profilePicture,
+        });
 
-      // Check if email already exists
-      if (registeredEmails.has(input.email.toLowerCase())) {
+        return {
+          success: response.data.success,
+          message: 'Registration successful!',
+          user: response.data.data,
+        };
+      } catch (error: any) {
+        const errorMessage = error.response?.data?.error || 'Failed to register';
         throw new TRPCError({
-          code: 'CONFLICT',
-          message: 'This email is already registered',
+          code: error.response?.status === 409 ? 'CONFLICT' : 'INTERNAL_SERVER_ERROR',
+          message: errorMessage,
         });
       }
-
-      // Check if CUIT already exists
-      if (registeredCuits.has(input.cuit)) {
-        throw new TRPCError({
-          code: 'CONFLICT',
-          message: 'This CUIT is already registered',
-        });
-      }
-
-      // Create new user
-      const newUser = {
-        id: `user-${Date.now()}`,
-        email: input.email.toLowerCase(),
-        name: input.name,
-        cuit: input.cuit,
-        alias: input.alias,
-        phone: input.phone,
-        photo: input.photo,
-        verified: false,
-      };
-
-      // Add to mock database
-      registeredUsers.push(newUser);
-      registeredEmails.add(input.email.toLowerCase());
-      registeredCuits.add(input.cuit);
-
-      return {
-        success: true,
-        message: 'Registration successful! Please check your email to verify your account.',
-        user: {
-          id: newUser.id,
-          email: newUser.email,
-          name: newUser.name,
-        },
-      };
     }),
 
   /**
-   * Resend verification email
+   * Recover account by CUIT
    */
-  resendVerification: publicProcedure
-    .input(z.object({ email: z.string().email() }))
+  recoverByCuit: publicProcedure
+    .input(z.object({ cuit: z.string().min(11, 'CUIT must be 11 digits').max(11, 'CUIT must be 11 digits') }))
     .mutation(async ({ input }) => {
-      await delay(1500); // Simulate email resending
-
-      const user = registeredUsers.find(
-        (u) => u.email.toLowerCase() === input.email.toLowerCase()
-      );
-
-      if (!user) {
-        // Still return success for security reasons
+      try {
+        const cuitDigits = input.cuit.replace(/\D/g, '');
+        const response = await backendClient.post('/api/register/recover-by-cuit', {
+          cuit: cuitDigits,
+        });
         return {
-          success: true,
-          message: 'If an account exists with this email, a verification link will be sent.',
+          success: response.data.success,
+          message: response.data.message,
+          emailMasked: response.data.emailMasked,
         };
+      } catch (error: any) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.response?.data?.error || 'Failed to recover account',
+        });
       }
+    }),
 
-      return {
-        success: true,
-        message: 'Verification email sent successfully.',
-      };
+  /**
+   * Complete user profile (for Clerk users)
+   */
+  completeProfile: publicProcedure
+    .input(z.object({
+      userId: z.string().optional(),
+      password: z.string().min(8, 'Password must be at least 8 characters').optional(),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+      phone: z.string().optional(),
+      cuit: z.string().min(11, 'CUIT must be 11 digits').max(11, 'CUIT must be 11 digits'),
+      alias: z.string().optional(),
+      profilePicture: z.string().optional(),
+    }))
+    .mutation(async ({ input }) => {
+      try {
+        const { userId, ...profileData } = input;
+        const response = await backendClient.post('/api/register/complete-profile', profileData, {
+          params: userId ? { userId } : undefined,
+        });
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          user: response.data.data,
+        };
+      } catch (error: any) {
+        throw new TRPCError({
+          code: error.response?.status === 409 ? 'CONFLICT' : 'INTERNAL_SERVER_ERROR',
+          message: error.response?.data?.error || 'Failed to complete profile',
+        });
+      }
+    }),
+
+  /**
+   * Unify login methods (link Clerk to existing account)
+   */
+  unifyLogin: publicProcedure
+    .input(z.object({
+      email: z.string().email(),
+      clerkId: z.string(),
+    }))
+    .mutation(async ({ input }) => {
+      try {
+        const response = await backendClient.post('/api/register/unify-login', input);
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          user: response.data.data,
+        };
+      } catch (error: any) {
+        throw new TRPCError({
+          code: error.response?.status === 404 ? 'NOT_FOUND' : 'INTERNAL_SERVER_ERROR',
+          message: error.response?.data?.error || 'Failed to unify login methods',
+        });
+      }
     }),
 });
 

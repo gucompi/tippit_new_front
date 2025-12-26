@@ -77,7 +77,7 @@ let mockEmployees: Employee[] = [
     email: 'ana@example.com',
     sucursal: 'Sucursal Centro',
     rol: 'Mozo',
-    foto: null,
+    foto: undefined,
     cuit: '27-55667788-9',
     dni: '55667788',
     alias: 'Ana M',

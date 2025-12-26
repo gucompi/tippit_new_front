@@ -6,11 +6,12 @@ import { trpc } from '@/lib/trpc';
 export interface RegisterFormData {
   email: string;
   password: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   cuit: string;
   alias: string;
   phone: string;
-  photo: string;
+  profilePicture: string;
 }
 
 export interface RegisterValidation {
@@ -29,11 +30,12 @@ export function useRegisterForm() {
   const [formData, setFormData] = useState<RegisterFormData>({
     email: '',
     password: '',
-    name: '',
+    firstName: '',
+    lastName: '',
     cuit: '',
     alias: '',
     phone: '',
-    photo: '',
+    profilePicture: '',
   });
 
   const [validation, setValidation] = useState<RegisterValidation>({
@@ -211,11 +213,12 @@ export function useRegisterForm() {
       registerMutation.mutate({
         email: formData.email,
         password: formData.password,
-        name: formData.name,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
         cuit: formData.cuit.replace(/\D/g, ''),
         alias: formData.alias,
         phone: formData.phone.replace(/\D/g, ''),
-        photo: formData.photo,
+        profilePicture: formData.profilePicture,
       });
     },
     [formData, registerMutation]
@@ -245,11 +248,12 @@ export function useRegisterForm() {
     setFormData({
       email: '',
       password: '',
-      name: '',
+      firstName: '',
+      lastName: '',
       cuit: '',
       alias: '',
       phone: '',
-      photo: '',
+      profilePicture: '',
     });
     setValidation({
       emailError: '',

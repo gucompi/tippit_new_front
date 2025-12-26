@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint . --max-warnings=0",
+    "type-check": "tsc --noEmit",
     "seed": "ts-node --esm strapi-schemas/seed-data.ts"
   },
   "dependencies": {
@@ -15,6 +16,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fontsource/inter": "^5.2.8",
+    "@mercadopago/sdk-react": "^1.0.6",
     "@mui/icons-material": "^7.3.6",
     "@mui/material": "^7.3.6",
     "@mui/material-nextjs": "^7.3.6",
@@ -32,6 +34,7 @@
     "react-hot-toast": "^2.6.0",
     "sass": "^1.97.1",
     "superjson": "^2.2.6",
+    "svix": "^1.82.0",
     "zod": "^4.2.1"
   },
   "devDependencies": {

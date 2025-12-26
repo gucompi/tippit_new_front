@@ -6,12 +6,14 @@ import { useTranslations } from 'next-intl';
 import { tokens } from '@/styles/tokens';
 
 interface Step1Props {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   showPassword: boolean;
   errors: {
-    name?: string;
+    firstName?: string;
+    lastName?: string;
     email?: string;
     password?: string;
   };
@@ -20,7 +22,8 @@ interface Step1Props {
     emailChecking: boolean;
     emailOk: boolean;
   };
-  onNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFirstNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onLastNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onEmailBlur: () => void;
   onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -30,13 +33,15 @@ interface Step1Props {
 }
 
 export function Step1Credentials({
-  name,
+  firstName,
+  lastName,
   email,
   password,
   showPassword,
   errors,
   validation,
-  onNameChange,
+  onFirstNameChange,
+  onLastNameChange,
   onEmailChange,
   onEmailBlur,
   onPasswordChange,
@@ -50,10 +55,10 @@ export function Step1Credentials({
 
   return (
     <>
-      {/* Name Field */}
+      {/* First Name Field */}
       <div className="w-full max-w-[379px] space-y-2">
         <label
-          htmlFor="name"
+          htmlFor="firstName"
           className="text-sm font-bold leading-5"
           style={{
             color: tokens.colors.textInput,
@@ -61,10 +66,10 @@ export function Step1Credentials({
             letterSpacing: tokens.typography.letterSpacing.tight,
           }}
         >
-          {t('fullName')}
+          {t('firstName', { defaultValue: 'First Name' })}
         </label>
         <div className="relative">
-          {errors.name && (
+          {errors.firstName && (
             <AlertTriangle
               className="absolute right-5 top-1/2 -translate-y-1/2 z-10"
               style={{ color: tokens.colors.error }}
@@ -73,14 +78,14 @@ export function Step1Credentials({
           )}
           <input
             type="text"
-            id="name"
-            name="name"
-            placeholder={t('fullNamePlaceholder')}
-            value={name}
-            onChange={onNameChange}
+            id="firstName"
+            name="firstName"
+            placeholder={t('firstNamePlaceholder', { defaultValue: 'Enter your first name' })}
+            value={firstName}
+            onChange={onFirstNameChange}
             className="h-[48px] w-full rounded-full border px-12 text-base outline-none transition placeholder:text-[#9da3b5]"
             style={
-              errors.name
+              errors.firstName
                 ? {
                     border: `1px solid ${tokens.colors.errorBorder}`,
                     backgroundColor: tokens.colors.errorLight,
@@ -91,16 +96,71 @@ export function Step1Credentials({
                     color: tokens.colors.textInput,
                   }
             }
-            autoComplete="name"
+            autoComplete="given-name"
           />
           <User
             className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2"
             style={{ color: tokens.colors.icon }}
           />
         </div>
-        {errors.name && (
+        {errors.firstName && (
           <p className="text-sm" style={{ color: tokens.colors.error }}>
-            *{errors.name}
+            *{errors.firstName}
+          </p>
+        )}
+      </div>
+
+      {/* Last Name Field */}
+      <div className="w-full max-w-[379px] space-y-2">
+        <label
+          htmlFor="lastName"
+          className="text-sm font-bold leading-5"
+          style={{
+            color: tokens.colors.textInput,
+            fontFamily: tokens.typography.fontFamily.primary,
+            letterSpacing: tokens.typography.letterSpacing.tight,
+          }}
+        >
+          {t('lastName', { defaultValue: 'Last Name' })}
+        </label>
+        <div className="relative">
+          {errors.lastName && (
+            <AlertTriangle
+              className="absolute right-5 top-1/2 -translate-y-1/2 z-10"
+              style={{ color: tokens.colors.error }}
+              size={18}
+            />
+          )}
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            placeholder={t('lastNamePlaceholder', { defaultValue: 'Enter your last name' })}
+            value={lastName}
+            onChange={onLastNameChange}
+            className="h-[48px] w-full rounded-full border px-12 text-base outline-none transition placeholder:text-[#9da3b5]"
+            style={
+              errors.lastName
+                ? {
+                    border: `1px solid ${tokens.colors.errorBorder}`,
+                    backgroundColor: tokens.colors.errorLight,
+                    color: tokens.colors.textInput,
+                  }
+                : {
+                    borderColor: tokens.colors.border,
+                    color: tokens.colors.textInput,
+                  }
+            }
+            autoComplete="family-name"
+          />
+          <User
+            className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2"
+            style={{ color: tokens.colors.icon }}
+          />
+        </div>
+        {errors.lastName && (
+          <p className="text-sm" style={{ color: tokens.colors.error }}>
+            *{errors.lastName}
           </p>
         )}
       </div>

@@ -60,7 +60,8 @@ export function RegisterForm({
   const t3 = useTranslations('register.step3');
   const [showPassword, setShowPassword] = useState(false);
   const [formErrors, setFormErrors] = useState<{
-    name?: string;
+    firstName?: string;
+    lastName?: string;
     email?: string;
     password?: string;
     cuit?: string;
@@ -89,21 +90,22 @@ export function RegisterForm({
 
   // Sync photo with form data
   useEffect(() => {
-    if (photo !== formData.photo) {
-      onUpdateFormData('photo', photo);
+    if (photo !== formData.profilePicture) {
+      onUpdateFormData('profilePicture', photo);
     }
-  }, [photo, formData.photo, onUpdateFormData]);
+  }, [photo, formData.profilePicture, onUpdateFormData]);
 
   // Validation functions
   const isStep1Valid = useCallback(() => {
     return (
-      formData.name.trim().length > 0 &&
+      formData.firstName.trim().length > 0 &&
+      formData.lastName.trim().length > 0 &&
       formData.email.trim().length > 0 &&
       !validation.emailError &&
       validation.emailOk &&
       formData.password.length >= 8
     );
-  }, [formData.name, formData.email, formData.password, validation.emailError, validation.emailOk]);
+  }, [formData.firstName, formData.lastName, formData.email, formData.password, validation.emailError, validation.emailOk]);
 
   const isStep2Valid = useCallback(() => {
     return (
@@ -126,8 +128,13 @@ export function RegisterForm({
     const errors: typeof formErrors = {};
     let isValid = true;
 
-    if (!formData.name.trim()) {
-      errors.name = t1('errors.nameRequired');
+    if (!formData.firstName.trim()) {
+      errors.firstName = t1('errors.firstNameRequired');
+      isValid = false;
+    }
+
+    if (!formData.lastName.trim()) {
+      errors.lastName = t1('errors.lastNameRequired');
       isValid = false;
     }
 
@@ -149,7 +156,7 @@ export function RegisterForm({
 
     setFormErrors((prev) => ({ ...prev, ...errors }));
     return isValid;
-  }, [formData.name, formData.email, formData.password, validation.emailError, t1]);
+  }, [formData.firstName, formData.lastName, formData.email, formData.password, validation.emailError, t1]);
 
   const validateStep2 = useCallback(() => {
     const errors: typeof formErrors = {};
@@ -237,15 +244,20 @@ export function RegisterForm({
 
       {step === 1 && (
         <Step1Credentials
-          name={formData.name}
+          firstName={formData.firstName}
+          lastName={formData.lastName}
           email={formData.email}
           password={formData.password}
           showPassword={showPassword}
           errors={formErrors}
           validation={validation}
-          onNameChange={(e) => {
-            onUpdateFormData('name', e.target.value);
-            setFormErrors((prev) => ({ ...prev, name: undefined }));
+          onFirstNameChange={(e) => {
+            onUpdateFormData('firstName', e.target.value);
+            setFormErrors((prev) => ({ ...prev, firstName: undefined }));
+          }}
+          onLastNameChange={(e) => {
+            onUpdateFormData('lastName', e.target.value);
+            setFormErrors((prev) => ({ ...prev, lastName: undefined }));
           }}
           onEmailChange={(e) => {
             onUpdateFormData('email', e.target.value);
@@ -282,6 +294,10 @@ export function RegisterForm({
             onUpdateFormData('cuit', value);
             onClearValidationError('cuit');
             setFormErrors((prev) => ({ ...prev, cuit: undefined }));
+            // Check CUIT uniqueness on change if it's 11 digits
+            if (value.length === 11) {
+              onCheckCuit(value);
+            }
           }}
           onCuitBlur={handleCuitBlur}
           onAliasChange={(e) => {

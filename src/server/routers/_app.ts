@@ -10,6 +10,7 @@ import { qrsRouter } from './qrs';
 import { staffRouter } from './staff';
 import { sociosRouter } from './socios';
 import { dashboardRouter } from './dashboard';
+import { mercadoPagoRouter } from './mercadoPago';
 
 export const appRouter = router({
   auth: authRouter,
@@ -23,6 +24,7 @@ export const appRouter = router({
   staff: staffRouter,
   socios: sociosRouter,
   dashboard: dashboardRouter,
+  mercadoPago: mercadoPagoRouter,
 });
 
 export type AppRouter = typeof appRouter;

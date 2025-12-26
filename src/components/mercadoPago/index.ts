@@ -1,0 +1,2 @@
+export { PaymentBricks } from './PaymentBricks';
+
