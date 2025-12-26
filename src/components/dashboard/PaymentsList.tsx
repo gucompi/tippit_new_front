@@ -167,7 +167,7 @@ export function PaymentsList({ groupedPayments }: PaymentsListProps) {
                                 <span
                                   key={index}
                                   className={`text-sm ${
-                                    index < payment.calificacion
+                                    payment.calificacion !== undefined && index < payment.calificacion
                                       ? 'text-yellow-400'
                                       : 'text-gray-300'
                                   }`}
