@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui';
 
 export function NotificationsScreen() {
   const t = useTranslations('notifications');
+  const utils = trpc.useUtils();
   const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all');
   const [page, setPage] = useState(1);
   const perPage = 10;
@@ -39,7 +40,7 @@ export function NotificationsScreen() {
   const markAllAsReadMutation = trpc.notifications.markAllAsRead.useMutation({
     onSuccess: () => {
       refetchNotifications();
-      trpc.notifications.getStats.invalidate();
+      utils.notifications.getStats.invalidate();
     },
   });
 
@@ -111,10 +112,10 @@ export function NotificationsScreen() {
             <button
               type="button"
               onClick={handleMarkAllAsRead}
-              disabled={markAllAsReadMutation.isLoading || unreadCount === 0}
+              disabled={markAllAsReadMutation.isPending || unreadCount === 0}
               className="px-4 py-2 bg-[#EB5998] text-white text-sm rounded-lg hover:bg-[#EB5998] transition-colors flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {markAllAsReadMutation.isLoading ? (
+                  {markAllAsReadMutation.isPending ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
               ) : (
                 <CheckCircle size={16} />

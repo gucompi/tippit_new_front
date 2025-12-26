@@ -278,7 +278,7 @@ export function StaffScreen() {
       isOpen: true,
       type,
       id,
-      name: item?.nombre || item?.name || '',
+      name: item ? ('nombre' in item ? item.nombre : item.name) || '' : '',
     });
   }, [employees, roles]);
 
@@ -578,9 +578,9 @@ export function StaffScreen() {
                 type="button"
                 className="bg-pink-500 text-white px-6 py-2 rounded-full hover:bg-pink-600 transition mt-6 md:mt-0 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 onClick={handleSubmitRole}
-                disabled={createRoleMutation.isLoading || !newRole.nombre || !newRole.color || !newRole.porcentaje}
+                disabled={createRoleMutation.isPending || !newRole.nombre || !newRole.color || !newRole.porcentaje}
               >
-                {createRoleMutation.isLoading ? t('creating', { defaultValue: 'Creating...' }) : t('addRoleButton', { defaultValue: 'Add Role' })}
+                {createRoleMutation.isPending ? t('creating', { defaultValue: 'Creating...' }) : t('addRoleButton', { defaultValue: 'Add Role' })}
               </button>
             </div>
           </div>
@@ -661,9 +661,9 @@ export function StaffScreen() {
                 type="button"
                 className="bg-pink-500 text-white px-6 py-2 rounded-full hover:bg-pink-600 transition mt-6 md:mt-0 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 onClick={handleSubmitRole}
-                disabled={updateRoleMutation.isLoading || !newRole.nombre || !newRole.color || !newRole.porcentaje}
+                disabled={updateRoleMutation.isPending || !newRole.nombre || !newRole.color || !newRole.porcentaje}
               >
-                {updateRoleMutation.isLoading ? t('updating', { defaultValue: 'Updating...' }) : t('updateRoleButton', { defaultValue: 'Update Role' })}
+                {updateRoleMutation.isPending ? t('updating', { defaultValue: 'Updating...' }) : t('updateRoleButton', { defaultValue: 'Update Role' })}
               </button>
             </div>
           </div>
@@ -762,7 +762,7 @@ export function StaffScreen() {
         }
         confirmText={t('delete', { defaultValue: 'Delete' })}
         cancelText={t('cancel', { defaultValue: 'Cancel' })}
-        isLoading={deleteEmployeeMutation.isLoading || deleteRoleMutation.isLoading}
+        isLoading={deleteEmployeeMutation.isPending || deleteRoleMutation.isPending}
       />
 
       <SuccessModal
@@ -789,7 +789,7 @@ export function StaffScreen() {
         isEditing={isEditingPersonal}
         employeeData={editingPersonalData}
         backendRoles={roles}
-        isSubmitting={createEmployeeMutation.isLoading || updateEmployeeMutation.isLoading}
+        isSubmitting={createEmployeeMutation.isPending || updateEmployeeMutation.isPending}
       />
 
       <VincularMPForm

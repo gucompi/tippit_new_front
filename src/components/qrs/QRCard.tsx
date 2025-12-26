@@ -309,15 +309,15 @@ export function QRCard({
         >
           <option value="">{t('selectStaff', { defaultValue: 'Choose staff' })}</option>
           {staff
-            .filter((mozo) => mozo && mozo.cuit && (mozo.nombre || mozo.name))
+            .filter((mozo) => mozo && mozo.cuit && mozo.nombre)
             .sort((a, b) => {
-              const nameA = (a.nombre || a.name || '').toLowerCase();
-              const nameB = (b.nombre || b.name || '').toLowerCase();
+              const nameA = (a.nombre || '').toLowerCase();
+              const nameB = (b.nombre || '').toLowerCase();
               return nameA.localeCompare(nameB);
             })
             .map((mozo, index) => (
               <option key={`${mozo.id || index}-${mozo.cuit}`} value={mozo.cuit}>
-                {mozo.nombre || mozo.name}
+                {mozo.nombre}
               </option>
             ))}
         </select>

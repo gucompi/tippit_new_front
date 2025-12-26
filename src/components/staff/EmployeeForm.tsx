@@ -68,7 +68,7 @@ export function EmployeeForm({
   const [selectedRole, setSelectedRole] = useState('');
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
-  const searchEmployeeByCuitMutation = trpc.staff.searchEmployeeByCuit.useMutation();
+  const utils = trpc.useUtils();
 
   useEffect(() => {
     if (isOpen) {
@@ -147,7 +147,7 @@ export function EmployeeForm({
     setFoundEmployee(null);
 
     try {
-      const result = await searchEmployeeByCuitMutation.mutateAsync({ cuit: searchCuit });
+      const result = await utils.staff.searchEmployeeByCuit.fetch({ cuit: searchCuit });
       if (result.found && result.employee) {
         if (onEmployeeFound) {
           const validationResult = onEmployeeFound(result.employee);
@@ -169,7 +169,7 @@ export function EmployeeForm({
     } finally {
       setIsSearching(false);
     }
-  }, [searchCuit, searchEmployeeByCuitMutation, onEmployeeFound, t]);
+  }, [searchCuit, utils, onEmployeeFound, t]);
 
   const handleInputChange = (field: string, value: string) => {
     let processedValue = value;

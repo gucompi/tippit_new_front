@@ -239,8 +239,8 @@ export function Menu() {
         items = menuData.items;
       } else if (Array.isArray(menuData)) {
         items = menuData;
-      } else if (menuData.data && Array.isArray(menuData.data)) {
-        items = menuData.data;
+      } else if ('data' in menuData && Array.isArray((menuData as any).data)) {
+        items = (menuData as any).data;
       }
     }
     

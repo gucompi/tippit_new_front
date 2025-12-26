@@ -57,11 +57,12 @@ const iconColorMap = {
 
 export function NotificationCard({ notification }: NotificationCardProps) {
   const t = useTranslations('notifications');
+  const utils = trpc.useUtils();
   const markAsReadMutation = trpc.notifications.markAsRead.useMutation({
     onSuccess: () => {
       // Invalidate queries to refetch
-      trpc.notifications.getNotifications.invalidate();
-      trpc.notifications.getStats.invalidate();
+      utils.notifications.getNotifications.invalidate();
+      utils.notifications.getStats.invalidate();
     },
   });
 

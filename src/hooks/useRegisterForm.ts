@@ -75,7 +75,8 @@ export function useRegisterForm() {
     },
   });
 
-  const resendVerificationMutation = trpc.register.resendVerification.useMutation();
+  // resendVerification is not implemented in the register router
+  // const resendVerificationMutation = trpc.register.resendVerification.useMutation();
 
   // Validation helpers
   const validateEmail = useCallback((email: string): boolean => {
@@ -224,12 +225,13 @@ export function useRegisterForm() {
     [formData, registerMutation]
   );
 
-  // Resend verification email
+  // Resend verification email (not implemented yet)
   const resendVerificationEmail = useCallback(
     async (email: string) => {
-      return resendVerificationMutation.mutateAsync({ email });
+      // TODO: Implement resendVerification in register router
+      throw new Error('Resend verification not implemented yet');
     },
-    [resendVerificationMutation]
+    []
   );
 
   // Clear validation error
@@ -300,7 +302,7 @@ export function useRegisterForm() {
 
     // Resend verification
     resendVerificationEmail,
-    isResending: resendVerificationMutation.isPending,
+    isResending: false, // TODO: Implement when resendVerification is added
 
     // Reset
     resetForm,

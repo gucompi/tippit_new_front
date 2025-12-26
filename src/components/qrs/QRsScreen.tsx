@@ -544,7 +544,7 @@ export function QRsScreen() {
         onAddTag={handleAddTag}
         onRemoveTag={handleRemoveTag}
         onCreateAndAssignTag={handleCreateAndAssignTag}
-        isCreatingTag={createTagMutation.isLoading}
+        isCreatingTag={createTagMutation.isPending}
         draggedTag={draggedTag}
         onDragStart={handleDragStart}
       />
@@ -553,7 +553,7 @@ export function QRsScreen() {
         isOpen={showCreateQRModal}
         onClose={handleCloseCreateQRModal}
         onCreate={handleCreateQR}
-        isCreating={createQRMutation.isLoading}
+        isCreating={createQRMutation.isPending}
       />
 
       <ViewQRModal

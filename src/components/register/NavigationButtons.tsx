@@ -52,7 +52,7 @@ export function NavigationButtons({
           fontFamily: tokens.typography.fontFamily.primary,
           padding: '16px',
           backgroundColor:
-            isNextDisabled || isSubmitting ? tokens.colors.disabled : tokens.colors.primary,
+            isNextDisabled || isSubmitting ? '#9CA3AF' : tokens.colors.primary,
           cursor: isNextDisabled || isSubmitting ? 'not-allowed' : 'pointer',
         }}
       >

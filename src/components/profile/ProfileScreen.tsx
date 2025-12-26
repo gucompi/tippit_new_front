@@ -63,8 +63,8 @@ export function ProfileScreen() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Search employee mutation
-  const searchEmployee = trpc.profile.searchEmployee.useMutation();
+  // Search employee (query, not mutation)
+  const utils = trpc.useUtils();
   const linkMozo = trpc.profile.linkMozo.useMutation();
   const unlinkMozo = trpc.profile.unlinkMozo.useMutation();
 
@@ -126,7 +126,7 @@ export function ProfileScreen() {
     setSuccessMessage('');
 
     try {
-      const result = await searchEmployee.mutateAsync({ cuit: cuitInput });
+      const result = await utils.profile.searchEmployee.fetch({ cuit: cuitInput });
       if (result.detail === 'Empleado no encontrado') {
         setModalContent(null);
         setErrorMessage('Employee not found');
@@ -245,10 +245,10 @@ export function ProfileScreen() {
       <div className="flex flex-col gap-6 mb-4 md:mb-8 mx-[18px]">
         <div className="flex flex-col lg:flex-row gap-6 mt-10">
           {/* Photo Card */}
-          <StatCard>
+          <StatCard title={t('photo')}>
             {isEditing && (
               <ProfilePhoto
-                photoRef={photoRef}
+                photoRef={photoRef as React.RefObject<HTMLImageElement>}
                 onSave={handlePhotoSave}
                 initialPhoto={profileData.photo}
               />
@@ -293,13 +293,11 @@ export function ProfileScreen() {
           </StatCard>
 
           {/* Personal Information Card */}
-          <StatCard
-            title={t('personalInformation')}
-            className="w-full lg:w-2/3 flex flex-col justify-center"
-          >
-            <div className="flex flex-col gap-4 text-sm md:text-base px-6 pb-4">
-              {/* Name */}
-              <div className="flex items-center gap-4">
+          <div className="w-full lg:w-2/3 flex flex-col justify-center">
+            <StatCard title={t('personalInformation')}>
+              <div className="flex flex-col gap-4 text-sm md:text-base px-6 pb-4">
+                {/* Name */}
+                <div className="flex items-center gap-4">
                 <User size={32} style={{ color: tokens.colors.primary }} />
                 {isEditing ? (
                   <input
@@ -399,7 +397,7 @@ export function ProfileScreen() {
               )}
             </div>
           </StatCard>
-
+              </div>
           {/* Mozo Stats Cards */}
           {profileData.rol === 'Mozo' && (
             <div className="grid grid-rows-3 gap-6 hidden md:grid">
